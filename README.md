@@ -10,17 +10,17 @@ We used Twitter data as the probabilistic and the CDC data as the collaborative 
 
 This is a fold to analyze our result. The major file draw.py used regular expression extract the target data and I used matplotlib to draw the chart I need. Here I analyzed the number of tweets each and the number of confirmed cases each day. And I analyzed the number of tweets and the number of confirmed cases for each state. The collaborative.csv record the collaborative data and the twitter.json represent the probabilistic data.
 
-![image-20200424224718610](image/InstancesByDate.png)
+<div align=center><img src="image/InstancesByDate.png"></div>
 
-<center>The number of tweets and number of cases each day</center>
+<p align="center">The number of tweets and number of cases each day</p>
 
-![image-20200424224728886](image/CollaborativeSourceForEachState.png)
+<div align=center><img src="image/CollaborativeSourceForEachState.png"></div>
 
-<center>The number of confirmed cases for each state</center>
+<p align="center">The number of confirmed cases for each state</p>
 
-![image-20200424224738762](image/ProbalisticSourceForEachState.png)
+<div align=center><img src="image/ProbalisticSourceForEachState.png"></div>
 
-<center>The number of tweets for each state</center>
+<p align="center">The number of tweets for each state</p>
 
 ## Model_Training Folder
 
