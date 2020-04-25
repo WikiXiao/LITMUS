@@ -24,7 +24,7 @@ This is a fold to analyze our result. The major file draw.py used regular expres
 
 ## Model_Training Folder
 
-The select_negative_sample.py is used to select the negative sample for our training. And the select_positive_sample.py is used to select the positive sample for our training. By negative we means the text does not shows an event about coronavirus. The train.py is the main file for training model. First, I read the data from file and convert it into the form of input for the neural network. Than I created the embedding layer using the word vector. I used the glove data for the word vector. At last, I used 3 Conv1D layer and 3 MaxPool layer to create the model. The model is saved as my_model.h5. The predict.py is used to predict whether a text indicate our target event.
+The select_negative_sample.py is used to select the negative sample for our training. And the select_positive_sample.py is used to select the positive sample for our training. By negative we means the text does not shows an event about coronavirus. The train.py is the main file for training model. First, I read the data from file and convert it into the form of input for the neural network. Than I created the embedding layer using the word vector. I used the glove data for the word vector. At last, I used 3 Conv1D layer and 3 MaxPool layer to create the model. The model is saved as my_model.h5. The predict.py is used to predict whether a text indicate our target event. The accuracy of our model is 0.7680.
 
 ## Twitter_Data Folder
 
