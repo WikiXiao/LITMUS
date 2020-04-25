@@ -4,21 +4,21 @@
 
 We used Twitter data as the probabilistic and the CDC data as the collaborative source. We created a location detector to extract the place name from an text. We used the word2vec and sent2vec to vectorize a text and we used convolutional neural network to build our classifier. At last we post the detected event on the map using JavaScript.
 
-![image-20200424224002297](C:\Users\weiqi\AppData\Roaming\Typora\typora-user-images\image-20200424224002297.png)
+![image-20200424224718610](image/architecture.png)
 
 ## Analysis Folder
 
 This is a fold to analyze our result. The major file draw.py used regular expression extract the target data and I used matplotlib to draw the chart I need. Here I analyzed the number of tweets each and the number of confirmed cases each day. And I analyzed the number of tweets and the number of confirmed cases for each state. The collaborative.csv record the collaborative data and the twitter.json represent the probabilistic data.
 
-![image-20200424224718610](C:\Users\weiqi\AppData\Roaming\Typora\typora-user-images\image-20200424224718610.png)
+![image-20200424224718610](image/InstancesByDate.png)
 
 <center>The number of tweets and number of cases each day</center>
 
-![image-20200424224728886](C:\Users\weiqi\AppData\Roaming\Typora\typora-user-images\image-20200424224728886.png)
+![image-20200424224728886](image/CollaborativeSourceForEachState.png)
 
 <center>The number of confirmed cases for each state</center>
 
-![image-20200424224738762](C:\Users\weiqi\AppData\Roaming\Typora\typora-user-images\image-20200424224738762.png)
+![image-20200424224738762](image/ProbalisticSourceForEachState.png)
 
 <center>The number of tweets for each state</center>
 
@@ -95,7 +95,7 @@ The core part of the codes is to upate information on the map according to the s
 }
 ```
 
-![video](image/timetrend.gif)
+![video](web/image/timetrend.gif)
 
 
 
@@ -138,6 +138,6 @@ function buttonFunction() {
                     }
                 }
 ```
-![tweet](image/tweet.gif)
+![tweet](web/image/tweet.gif)
 
 
