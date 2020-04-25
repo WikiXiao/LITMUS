@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Coronavirus Map</title>
+    <link href="css/style.css" rel="stylesheet" type="text/css">
+    <link href="css/c3.min.css" rel="stylesheet">
+
+    <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.3/leaflet.css" integrity="sha256-bOWY8F32FGGbNDMPAnwWl/Lv9CKen4IQsNZ4RU9rcs0=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.3/leaflet.css" integrity="sha256-bOWY8F32FGGbNDMPAnwWl/Lv9CKen4IQsNZ4RU9rcs0=" crossorigin="anonymous" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.3/leaflet.js" integrity="sha256-GXUdrV9FHGDyzoSGD3O+jR3eYZaZZsjbsMvFhK3C0qg=" crossorigin="anonymous"></script>
+    <script src="https://d3js.org/d3.v5.min.js" charset="utf-8"></script>
+    <script src="https://d3js.org/d3-path.v1.min.js" charset="utf-8"></script>
+    <script src="js/c3.js"></script>
+    <script src="js/us-states.js"></script>
+    <script src="js/data.js"></script>
+    <script src="js/tweet.js"></script>
+
+
+</head>
+
+<body>
+
+    <nav class="black" style="height:45px">
+        <div style="text-align:center;color:white;font-size:20px;font-family:sans-serif;vertical-align:middle;line-height:45px">Covid-19 Infection Map</div>
+    </nav>
+
+
+
+    <div class="main" style="margin-top: 10px">
+        <div class="informationSummary" style="padding-left:20px;padding-top:5px">
+            <h1 id="title" style="font-size:19px"><img src="image/coronavirus.png" width="28px"> Covid-19 Infection Map
+            </h1>
+            <div style="padding-top: 10px;font-family:sans-serif"><span id="last-date">Updated on : </span>
+                <p id="datedisplay"></p>
+            </div>
+            <p><span id="source" style="font-family:sans-serif">Source: </span><span id="source-website" href="" target="_blank"><a href="https://developer.twitter.com/">Twitter</a>, <a href="https://coronavirus.1point3acres.com/en">1point3acres</a>, <a href="https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/cases-in-us.html">CDC</a> </span></p>
+            <div id="deck-1" class="card-deck counts">
+                <div class="card">
+                    <div class="card-body confirmed">
+                        <h5 class="card-title" style="font-family:sans-serif">Aggregated Cases(3.1-3.31)
+                            <i class="nav fas fa-exclamation-circle tooltip">
+                                <span class="tooltiptext">This is the confirmed cases from 3.1 upto 3.31 for all states </span>
+                            </i>
+                        </h5>
+                        <h5 class="card-text" id="confirmed-count">Aggregated Confirmed(3.1-3.31) </h5>
+                    </div>
+
+
+                </div>
+                <div class="card">
+                    <div class="card-body death">
+                        <h5 class="card-title" style="font-family:sans-serif">Aggregated Death(3.1-3.31)
+                            <i class="nav fas fa-exclamation-circle tooltip">
+                                <span class="tooltiptext">This is the death cases from 3.1 upto 3.31 for all states </span>
+                            </i>
+                        </h5>
+                        <h5 class="card-text" id="death-count">Aggregated death(3.1-3.31) </h5>
+                    </div>
+                </div>
+            </div>
+            <script>
+                document.getElementById("datedisplay").innerHTML = Date();
+
+
+                totalConfirmed = 0
+
+                function getDays(day1, day2) {
+                    var st = day1.getDate();
+                    var et = day2.getDate();
+
+                    var retArr = [];
+
+                    while (st.getTime() != et.getTime()) {
+
+                        retArr.push(st.getYMD());
+
+                        var tempDate = st.getDate();
+
+                        st = new Date(st.getFullYear(), st.getMonth(), st.getDate() + 1);
+                    }
+
+                    retArr.push(et.getYMD());
+
+                    return retArr
+                }
+                Date.prototype.getYMD = function() {
+                    var retDate = this.getFullYear() + "-"; // 获取年份。
+                    retDate += this.getMonth() + 1 + "-"; // 获取月份。          
+                    retDate += this.getDate(); // 获取日。
+                    return retDate; // 返回日期。
+                }
+
+                String.prototype.getDate = function() {
+                    var strArr = this.split('-');
+                    var date = new Date(strArr[0], strArr[1] - 1, strArr[2]);
+                    return date;
+                }
+
+                function getDaysList() {
+                    var dataArr = []
+                    for (var i = 1; i <= 31; i++) {
+                        if (i < 10) {
+                            dataArr.push("2020-03-" + String('0' + i))
+                        } else {
+                            dataArr.push("2020-03-" + String(i))
+
+                        }
+                    }
+                    return dataArr;
+                }
+                var dataArr = getDaysList();
+                totalConfirmed = 0
+                for (key in coronaData) {
+                    if (coronaData[key]["2020-03-31"] != undefined) {
+                        totalConfirmed += parseInt(coronaData[key]["2020-03-31"]["confirmed"]);
+                    }
+                }
+                totalDeath = 0
+                for (key in coronaData) {
+                    if (coronaData[key]["2020-03-31"] != undefined) {
+                        totalDeath += parseInt(coronaData[key]["2020-03-31"]["deaths"]);
+                    }
+                }
+
+
+                document.getElementById("confirmed-count").innerHTML = totalConfirmed
+                document.getElementById("death-count").innerHTML = totalDeath
+
+            </script>
+            <div id="timechart" class="timechart" style="margin-left:10px;padding-top:20px;padding-bottom: 15px">
+                <div style="font-size:25px;font-family:sans-serif"> Aggregated Timeline Chart in US </div>
+            </div>
+            <div id="timeline-chart" style="position:relative;left:-30px"></div>
+
+            <script>
+                var confirmBydateArray = new Array(31);
+                var deathBydateArray = new Array(31);
+                for (i = 0; i < 31; i += 1) {
+                    confirmBydateArray[i] = 0;
+                    deathBydateArray[i] = 0;
+                }
+
+                for (key in coronaData) {
+                    for (i = 0; i < 31; i += 1) {
+
+                        if (coronaData[key][dataArr[i]] != undefined) {
+                            confirmBydateArray[i] += parseInt(coronaData[key][dataArr[i]]["confirmed"]);
+                        }
+                    }
+                }
+
+                for (key in coronaData) {
+                    for (i = 0; i < 31; i += 1) {
+
+                        if (coronaData[key][dataArr[i]] != undefined) {
+                            deathBydateArray[i] += parseInt(coronaData[key][dataArr[i]]["deaths"]);
+                        }
+                    }
+                }
+                dataArr.unshift("date");
+                confirmBydateArray.unshift("confirmed");
+                deathBydateArray.unshift("death");
+
+                var chart = c3.generate({
+                    bindto: "#timeline-chart",
+                    data: {
+                        dataArr: 'dataArr',
+                        columns: [
+                            dataArr,
+                            confirmBydateArray,
+                            deathBydateArray
+                        ]
+                    },
+                    axis: {
+                        dataArr: {
+                            type: 'timeseries',
+                            tick: {
+                                format: '%Y-%m-%d'
+                            }
+                        }
+                    }
+                });
+
+            </script>
+
+
+
+        </div>
+        <div class="middle" style="padding-left:20px">
+            <div class='date'>
+                <section id='slider-top'>
+                    <label for='date' style="color:grey;font-size:16px;margin-bottom:0">Please choose a date between 3.1.2020 to 3.31.2020. Default date is 3.18 .The date you choose is: 3. </label>
+                    <span id='dateValue'>1</span>
+                </section>
+                <div class='slider' style="height:30px">
+                    <div class="row" style="margin-left:0;height:30px;margin-bottom:0">
+                        <div id='dateMin' class='legend' style="height:30px;line-height:30px">3.1.2020&nbsp</div>
+                        <input id='dateSlider' type='range' min='1' max='31' value='1' step='1' / style="width:400px">
+                        <div id='dateMax' class='legend' style="height:30px;line-height:30px">&nbsp3.31.2020</div>
+                    </div>
+                </div>
+            </div>
+            <div class='TweetMessages'>
+                <section id='slider-top'>
+                    <label for='tweetTitle' style="color:grey;font-size:16px;margin-bottom:0"> Click the button to get a tweet message, if the message is validated, it will be added to the map. (Up to 3 for presensation Purpose) </label>
+                    <span><button onclick="buttonFunction()">Click me</button></span>
+                </section>
+                <section style="padding-top: 10px"><span id="Tweet Message">TweetMessage: </span><span id="messageTweet">To Be Retrieved</span>
+                </section>
+                <section><span id="IfValid">This message is Valid or Not: </span><span id="messageTweetValid">To Be Retrieved</span>
+                </section>
+            </div>
+
+
+
+            <div id="mapid" style="height: 650px;"></div>
+            <script>
+                var slider = document.getElementById('dateSlider');
+                var year = document.getElementById('dateValue');
+                slider.addEventListener('input', function() {
+                    document.getElementById('dateValue').innerHTML = slider.value;
+                    onClickHandler();
+                });
+
+                function getDate(value) {
+                    if (value < 10) {
+                        return "2020-03-" + String('0' + value);
+                    } else {
+                        return "2020-03-" + String(value);
+                    }
+                }
+
+                function onClickHandler() {
+                    newdate = getDate(slider.value);
+                    updateCorona(newdate);
+                    geojson = L.geoJson(statesData, {
+                        style: style,
+                        onEachFeature: onEachFeature
+                    }).addTo(map);
+
+
+                }
+
+                function updateCorona(date) {
+                    for (var i = 0; i < statesData["features"].length; i++) {
+                        stateName = statesData.features[i].properties.name;
+                        if (coronaData[stateName] == undefined) {
+                            console.warn(stateName);
+                            statesData.features[i].properties.density = 0;
+                        } else if (coronaData[stateName][date] == undefined) {
+                            statesData.features[i].properties.density = 0;
+                        } else {
+                            statesData.features[i].properties.density = coronaData[stateName][date]["confirmed"];
+                        }
+
+                    }
+                }
+
+                updateCorona("2020-03-18")
+                date = "2020-03-18"
+
+
+                var map = L.map('mapid').setView([37.8, -96], 4);
+
+                L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
+                    maxZoom: 18,
+                    attributzion: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
+                        '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+                        'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+                    id: 'mapbox/light-v9',
+                    tileSize: 512,
+                    zoomOffset: -1
+                }).addTo(map);
+
+
+                // control that shows state info on hover
+                var info = L.control();
+
+                info.onAdd = function(map) {
+                    this._div = L.DomUtil.create('div', 'info');
+                    this.update();
+                    return this._div;
+                };
+
+                info.update = function(props) {
+                    this._div.innerHTML = '<h4>US coronavirus Cases</h4>' + (props ?
+                        '<b>' + props.name + '</b><br />' + coronaData[props.name][date]["confirmed"] + ' Cases' :
+                        'Please point to an state in United States');
+                };
+
+                info.addTo(map);
+
+
+                // get color depending on population density value
+                function getColor(d) {
+                    return d > 1000 ? '#800026' :
+                        d > 500 ? '#BD0026' :
+                        d > 200 ? '#E31A1C' :
+                        d > 100 ? '#FC4E2A' :
+                        d > 50 ? '#FD8D3C' :
+                        d > 20 ? '#FEB24C' :
+                        d > 10 ? '#FED976' :
+                        '#FFEDA0';
+                }
+
+                function style(feature) {
+                    return {
+                        weight: 2,
+                        opacity: 1,
+                        color: 'white',
+                        dashArray: '3',
+                        fillOpacity: 0.7,
+                        fillColor: getColor(feature.properties.density)
+                    };
+                }
+
+                function highlightFeature(e) {
+                    var layer = e.target;
+
+                    layer.setStyle({
+                        weight: 5,
+                        color: '#666',
+                        dashArray: '',
+                        fillOpacity: 0.7
+                    });
+
+                    if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+                        layer.bringToFront();
+                    }
+
+                    info.update(layer.feature.properties);
+                }
+
+                var geojson;
+
+                function resetHighlight(e) {
+                    geojson.resetStyle(e.target);
+                    info.update();
+                }
+
+                function zoomToFeature(e) {
+                    map.fitBounds(e.target.getBounds());
+                }
+
+                function onEachFeature(feature, layer) {
+                    layer.on({
+                        mouseover: highlightFeature,
+                        mouseout: resetHighlight,
+                        click: zoomToFeature
+                    });
+                }
+
+                geojson = L.geoJson(statesData, {
+                    style: style,
+                    onEachFeature: onEachFeature
+                }).addTo(map);
+
+                map.attributionControl.addAttribution('Covid-19 virus data;');
+
+
+                var legend = L.control({
+                    position: 'bottomright'
+                });
+
+                legend.onAdd = function(map) {
+
+                    var div = L.DomUtil.create('div', 'info legend'),
+                        grades = [0, 10, 20, 50, 100, 200, 500, 1000],
+                        labels = [],
+                        from, to;
+
+                    for (var i = 0; i < grades.length; i++) {
+                        from = grades[i];
+                        to = grades[i + 1];
+
+                        labels.push(
+                            '<i style="background:' + getColor(from + 1) + '"></i> ' +
+                            from + (to ? '&ndash;' + to : '+'));
+                    }
+
+                    div.innerHTML = labels.join('<br>');
+                    return div;
+                };
+
+                legend.addTo(map);
+
+                var LeafIcon = L.Icon.extend({
+                    options: {
+                        shadowUrl: 'icon/leaf-shadow.png',
+                        iconSize: [38, 95],
+                        shadowSize: [50, 64],
+                        iconAnchor: [22, 94],
+                        shadowAnchor: [4, 62],
+                        popupAnchor: [-3, -76]
+                    }
+                });
+                var greenIcon = new LeafIcon({
+                        iconUrl: 'icon/leaf-green.png'
+                    }),
+                    redIcon = new LeafIcon({
+                        iconUrl: 'icon/leaf-red.png'
+                    }),
+                    orangeIcon = new LeafIcon({
+                        iconUrl: 'icon/leaf-orange.png'
+                    });
+
+                iconArray = [greenIcon,redIcon, orangeIcon]
+                var clickTimes = 0
+
+                layerList = []
+                function buttonFunction() {
+                    clickTimes += 1
+                    if (clickTimes == tweetData.length + 1) {
+                        var message = document.getElementById('messageTweet')
+                        var valid = document.getElementById('messageTweetValid')
+                        message.innerHTML = "Click the Button to retrieve"
+                        valid.innerHTML = ""
+                        clickTimes =  clickTimes -tweetData.length-1
+                        for( i in layerList){
+                            layerList[i].remove()
+                        }
+
+
+                    } 
+                    else if(clickTimes == 4){
+                        var message = document.getElementById('messageTweet')
+                        var valid = document.getElementById('messageTweetValid')
+                        message.innerHTML = tweetData[clickTimes-1]["message"]
+                        valid.innerHTML = "invalid, therefore not added to map"
+                        
+                    }
+                    else {
+
+                        var message = document.getElementById('messageTweet')
+                        var valid = document.getElementById('messageTweetValid')
+                        message.innerHTML = tweetData[clickTimes-1]["message"]
+                        valid.innerHTML = "valid"
+                        latitude = tweetData[clickTimes-1]["latitude"]
+                        longitude = tweetData[clickTimes-1]["longitude"]
+                        var layerid = L.marker([latitude, longitude], {
+                            icon: iconArray[clickTimes%3]
+                        }).addTo(map).bindPopup(tweetData[clickTimes-1]["message"]);
+                        layerList.push(layerid)
+                    }
+                }
+
+            </script>
+
+        </div>
+
+
+    </div>
+
+
+
+
+
+</body>
+
+</html>
